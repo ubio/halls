@@ -22,7 +22,7 @@
     // The A3 project and dataset Halls reads, and the workflow that prepares a
     // booking. The service-account key is the HALLS_A3_TOKEN secret.
     "HALLS_A3_PROJECT": "ubio/student-accommodation-iq",
-    "HALLS_A3_DATASET": "",
+    "HALLS_A3_DATASET": "uk-student-accommodation-stock",
     "HALLS_A3_BOOKING_WORKFLOW": ""
     // HALLS_ADMINS (comma-separated admin addresses) is a secret, so the
     // addresses stay out of this public repository.
