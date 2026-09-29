@@ -1,8 +1,7 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
-  // Not deployed yet. Before the first deploy, create the D1 database and
-  // replace database_id; see README.md. The placeholder is enough for
-  // `wrangler d1 migrations apply DB --local` and `npm run dev`.
+  // Deploy with CLOUDFLARE_ACCOUNT_ID set to the Automation Cloud account;
+  // see README.md.
   "name": "ubio-halls",
   "main": "server/index.ts",
   "compatibility_date": "2026-05-22",
@@ -11,12 +10,13 @@
     {
       "binding": "DB",
       "database_name": "ubio-halls",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "e61f3cac-d212-4b02-82d8-508e2fc9213c",
       "migrations_dir": "db/migrations"
     }
   ],
   "observability": { "enabled": true },
   "workers_dev": false,
+  "routes": [{ "pattern": "halls.ubio.dev", "custom_domain": true }],
   "vars": {
     "APP_ORIGIN": "https://halls.ubio.dev",
     // The A3 project and dataset Halls reads, and the workflow that prepares a

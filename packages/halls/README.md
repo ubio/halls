@@ -34,4 +34,10 @@ See the [repository README](../../README.md). Tests run the real migrations in `
 
 ## Deploying
 
-Not deployed. It needs a D1 database (`ubio-halls`; replace the placeholder `database_id` in `wrangler.jsonc`), a Google OAuth client with `https://halls.ubio.dev/auth/callback`, the secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `HALLS_A3_TOKEN`, and a route for `halls.ubio.dev`. `npm run deploy` refuses until that is done.
+Production is Worker `ubio-halls`, D1 `ubio-halls`, origin `https://halls.ubio.dev`, in UBIO's Automation Cloud Cloudflare account (the same account and `ubio.dev` zone as the OSS OS apps). The account is not in the config, so give it on the command line:
+
+```sh
+CLOUDFLARE_ACCOUNT_ID=<Automation Cloud account id> npm run deploy
+```
+
+That builds, applies remote migrations and deploys. Secrets are set once with `wrangler secret put`: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (a Google OAuth web client whose redirect URI is `https://halls.ubio.dev/auth/callback`), and `HALLS_A3_TOKEN`. Until the Google client is set, the site shows its sign-in page with Google sign-in unavailable.

@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "setup:local": "node scripts/setup-local.mjs",
-    "deploy": "echo \"Halls has no production resources yet: see README\" && exit 1"
+    "deploy": "npm run build && wrangler d1 migrations apply DB --remote && wrangler deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
