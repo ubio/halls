@@ -1,5 +1,5 @@
 'use client';
-import { ArrowUpRight, BedDouble, ClipboardList, LogOut } from 'lucide-react';
+import { BedDouble, ClipboardList, LogOut } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -10,18 +10,10 @@ import {
   SidebarNavigationButton,
 } from '@oss-os/ui/components/sidebar';
 import { Button } from '@oss-os/ui/components/button';
-import { HubLink } from '@oss-os/ui/components/hub-link';
 import { HallsMark } from '@/components/halls-mark';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { goTo, type HallsRoute } from '@/lib/navigation';
 import type { Booking, Me, Stock } from '@/lib/types';
-
-/** UBIO's own apps, one click away. */
-const apps = [
-  ['A3', 'https://app.athree.dev'],
-  ['Orbit', 'https://orbit.ubio.dev'],
-  ['Lens', 'https://lens.ubio.dev'],
-] as const;
 
 interface SidebarProps {
   me: Me;
@@ -40,7 +32,11 @@ function initials(name: string): string {
     .join('');
 }
 
-/** The sidebar, drawn as Orbit, Lens and Tide draw theirs. Operators come from the stock itself. */
+/**
+ * The sidebar, drawn as Orbit, Lens and Tide draw theirs. Operators come from
+ * the stock itself. No links to UBIO's internal apps: Halls is shown to
+ * marketplaces.
+ */
 export function HallsSidebar({ me, route, stock, bookings, onSignOut }: SidebarProps) {
   const buildings = new Map<string, Set<string>>();
   for (const o of stock?.options ?? []) {
@@ -93,17 +89,6 @@ export function HallsSidebar({ me, route, stock, bookings, onSignOut }: SidebarP
             ))}
           </SidebarMenu>
         )}
-        <SidebarMenu className="nav-group">
-          <p className="nav-label">UBIO apps</p>
-          {apps.map(([name, url]) => (
-            <SidebarMenuItem key={name}>
-              <SidebarNavigationButton render={<a href={url} target="_blank" rel="noopener noreferrer" />}>
-                <ArrowUpRight />
-                <span>{name}</span>
-              </SidebarNavigationButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
         {me.user && (
@@ -113,7 +98,6 @@ export function HallsSidebar({ me, route, stock, bookings, onSignOut }: SidebarP
               <strong>{me.user.name}</strong>
               <small>{me.admin ? 'Administrator' : 'Team member'}</small>
             </span>
-            <HubLink />
             <ThemeToggle />
             <Button size="icon-sm" variant="ghost" aria-label="Sign out" onClick={onSignOut}>
               <LogOut size={15} />
