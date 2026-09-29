@@ -1,0 +1,15 @@
+{
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "name": "@oss-os/users",
+  "exports": {
+    ".": "./src/index.ts",
+    "./database": "./src/database.ts"
+  },
+  "dependencies": {},
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts"
+  }
+}

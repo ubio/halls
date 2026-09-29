@@ -1,0 +1,25 @@
+{
+  "name": "@ubio/halls",
+  "version": "0.1.0",
+  "private": true,
+  "description": "UBIO Halls: live student accommodation stock from A3, and bookings prepared against it",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace @oss-os/halls -- --port 3007",
+    "build": "npm run build --workspace @oss-os/halls",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "check": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "tsx": "^4.23.13",
+    "@types/node": "22.19.19"
+  }
+}

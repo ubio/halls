@@ -1,0 +1,30 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  // Not deployed yet. Before the first deploy, create the D1 database and
+  // replace database_id; see README.md. The placeholder is enough for
+  // `wrangler d1 migrations apply DB --local` and `npm run dev`.
+  "name": "ubio-halls",
+  "main": "server/index.ts",
+  "compatibility_date": "2026-05-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ubio-halls",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "db/migrations"
+    }
+  ],
+  "observability": { "enabled": true },
+  "workers_dev": false,
+  "vars": {
+    "APP_ORIGIN": "https://halls.ubio.dev",
+    // The A3 project and dataset Halls reads, and the workflow that prepares a
+    // booking. The service-account key is the HALLS_A3_TOKEN secret.
+    "HALLS_A3_PROJECT": "ubio/student-accommodation-iq",
+    "HALLS_A3_DATASET": "",
+    "HALLS_A3_BOOKING_WORKFLOW": "",
+    // Comma-separated addresses that administer Halls.
+    "HALLS_ADMINS": ""
+  }
+}

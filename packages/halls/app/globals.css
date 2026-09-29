@@ -1,0 +1,267 @@
+@import 'tailwindcss';
+@import '@oss-os/ui/fonts.css';
+@import '@oss-os/ui/theme.css';
+@import '@oss-os/ui/workspace.css';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@source '../../ui/src';
+button:disabled {
+  cursor: default;
+}
+/* Halls: what is specific to rooms and bookings. The shell, panels, fields,
+   login page, metrics, tables and status pills come from the shared
+   workspace stylesheet. */
+
+.halls-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-size: 14px;
+}
+.halls-breadcrumbs a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.halls-breadcrumbs [aria-current] {
+  color: var(--foreground);
+}
+.mock-login {
+  width: 100%;
+  margin-top: 10px;
+}
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12.5px;
+  color: var(--oss-accent);
+}
+.text-link:hover {
+  text-decoration: underline;
+}
+.operator-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: none;
+  margin: 0 3px;
+  background: var(--oss-dot-2);
+}
+.metric-icon svg {
+  display: block;
+}
+
+/* Filters: one row that wraps, the search taking what is left. */
+.halls-toolbar {
+  flex-wrap: wrap;
+}
+.halls-toolbar select {
+  font-size: 12.5px;
+  height: 32px;
+}
+.halls-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 260px;
+  min-width: 220px;
+  color: var(--oss-muted);
+}
+.halls-search svg {
+  position: absolute;
+  left: 10px;
+  pointer-events: none;
+}
+.halls-search input {
+  padding-left: 32px;
+}
+.halls-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--oss-text-2);
+  white-space: nowrap;
+}
+
+/* The rooms and bookings tables. */
+.halls-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.halls-table th {
+  text-align: left;
+  padding: 0 14px;
+}
+.halls-table td {
+  padding: 10px 14px;
+  border-top: 1px solid var(--oss-rule);
+  font-size: 13px;
+  color: var(--oss-text-2);
+  vertical-align: top;
+}
+.halls-table tbody tr:hover {
+  background: var(--oss-tint);
+}
+.halls-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.halls-table small {
+  display: block;
+  font-size: 12px;
+  color: var(--oss-muted);
+  margin-top: 2px;
+}
+.cell-main {
+  display: block;
+  color: var(--oss-ink);
+  font-weight: 600;
+}
+.row-link {
+  display: block;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.row-link strong {
+  color: var(--oss-ink);
+  font-weight: 600;
+}
+.row-link:hover strong,
+.cell-link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.cell-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--oss-ink);
+  font-weight: 600;
+}
+.offer-cell {
+  max-width: 220px;
+}
+.row-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+.row-actions button + button {
+  margin-left: 6px;
+}
+.error-text {
+  color: var(--oss-bad);
+}
+.show-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* One room, from the side. */
+.room-sheet {
+  width: min(520px, 100vw);
+  max-width: 520px !important;
+}
+.room-sheet-body {
+  padding: 0 16px 20px;
+  display: grid;
+  gap: 16px;
+  overflow-y: auto;
+}
+.room-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.room-facts dt {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--oss-muted);
+  margin-bottom: 3px;
+}
+.room-facts dd {
+  margin: 0;
+  font-size: 13px;
+  color: var(--oss-ink);
+}
+.room-offer {
+  padding: 9px 12px;
+  border-radius: 6px;
+  background: var(--oss-ok-bg);
+  border: 1px solid var(--oss-ok-line);
+  color: var(--oss-ok);
+  font-size: 12.5px;
+}
+.room-sheet-heading {
+  font-size: 13px;
+  font-weight: 620;
+  color: var(--oss-ink);
+}
+.stay-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.stay {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--oss-card);
+}
+.stay strong {
+  display: block;
+  font-size: 13.5px;
+  color: var(--oss-ink);
+  font-variant-numeric: tabular-nums;
+}
+.stay small {
+  display: block;
+  font-size: 12px;
+  color: var(--oss-muted);
+  margin-top: 2px;
+}
+.room-sheet-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.halls-dialog {
+  max-width: 560px;
+}
+.booking-note {
+  font-size: 12.5px;
+}
+@media (max-width: 900px) {
+  .halls-table th:nth-child(3),
+  .halls-table td:nth-child(3),
+  .halls-table th:nth-child(6),
+  .halls-table td:nth-child(6) {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .stay {
+    grid-template-columns: 1fr auto;
+  }
+  .stay-price {
+    grid-column: 1;
+  }
+  .halls-dialog .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

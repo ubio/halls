@@ -1,0 +1,10 @@
+{
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "name": "@oss-os/config",
+  "exports": {
+    "./tsconfig.json": "./tsconfig.json"
+  },
+  "dependencies": {}
+}

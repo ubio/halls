@@ -1,0 +1,19 @@
+{
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "name": "@oss-os/auth",
+  "exports": {
+    ".": "./src/index.ts",
+    "./google": "./src/google.ts",
+    "./crypto": "./src/crypto.ts"
+  },
+  "dependencies": {
+    "jose": "^6.2.12",
+    "@oss-os/users": "0.1.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts"
+  }
+}

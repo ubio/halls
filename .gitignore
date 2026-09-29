@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.next/
+.vinext/
+.wrangler/
+.private/
+.migration-backups/
+work/
+outputs/
+coverage/
+.env*
+.dev.vars*
+!.dev.vars.example
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+*.pem
+*.log
+
+# Python tooling caches
+__pycache__/
+*.py[cod]
