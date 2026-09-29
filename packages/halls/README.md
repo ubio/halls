@@ -40,4 +40,4 @@ Production is Worker `ubio-halls`, D1 `ubio-halls`, origin `https://halls.ubio.d
 CLOUDFLARE_ACCOUNT_ID=<Automation Cloud account id> npm run deploy
 ```
 
-That builds, applies remote migrations and deploys. Secrets are set once with `wrangler secret put`: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (a Google OAuth web client whose redirect URI is `https://halls.ubio.dev/auth/callback`), and `HALLS_A3_TOKEN`. Until the Google client is set, the site shows its sign-in page with Google sign-in unavailable.
+That builds, applies remote migrations and deploys. Secrets are set once with `wrangler secret put`: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (a Google OAuth web client whose redirect URI is `https://halls.ubio.dev/auth/callback`), `HALLS_A3_TOKEN`, and `HALLS_ADMINS` (comma-separated addresses that may cancel anybody's booking). Until the Google client is set, the site shows its sign-in page with Google sign-in unavailable.
