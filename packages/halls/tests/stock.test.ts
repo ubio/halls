@@ -71,8 +71,9 @@ test('the dataset is read page by page and repeated rows are counted once', asyn
       ? Response.json({ items: [{ details: { stock: [second, row] } }] })
       : Response.json({ items: [{ details: { stock: [row] } }], nextCursor: 'page-2' }),
   );
-  const options = await readDataset(connected, doFetch);
+  const { options, read } = await readDataset(connected, doFetch);
   assert.equal(options.length, 2);
+  assert.deepEqual([read.pages, read.items, read.rowsSeen, read.rowsKept], [2, 2, 3, 3]);
   assert.equal(calls.length, 2);
   assert.equal(calls[0].url.toString().split('?')[0], 'https://api.athree.dev/ubio/student-accommodation-iq/datasets/uk-student-rooms/items');
   assert.equal((calls[0].init?.headers as Record<string, string>).Authorization, 'Bearer test-key');

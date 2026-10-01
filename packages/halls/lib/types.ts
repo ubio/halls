@@ -35,6 +35,22 @@ export interface Stock {
   source: 'a3' | 'sample';
   fetchedAt: string;
   options: RoomOption[];
+  /** How the last A3 read went, in counts only: enough to see where rows were lost. */
+  read?: StockRead;
+}
+
+export interface StockRead {
+  pages: number;
+  items: number;
+  itemsWithDetails: number;
+  rowsSeen: number;
+  rowsKept: number;
+  /** Top-level keys of the first page and of the first item's details, to spot a changed shape. */
+  pageKeys: string[];
+  itemKeys: string[];
+  detailKeys: string[];
+  /** When the list carries no details: what the single-item and filter endpoints return for one item. */
+  probe?: { getStatus: number; getDetailKeys: string[]; filterStatus: number; filterDetailKeys: string[] };
 }
 
 export type BookingStatus = 'queued' | 'preparing' | 'ready' | 'failed' | 'cancelled';

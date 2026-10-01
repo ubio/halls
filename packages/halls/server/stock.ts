@@ -1,4 +1,4 @@
-import type { RoomOption, RoomStatus, Stock } from '../lib/types';
+import type { RoomOption, RoomStatus, Stock, StockRead } from '../lib/types';
 import { a3Headers, datasetItemsUrl } from './a3';
 import type { Env } from './auth';
 import { sampleOptions } from './sample-stock';
@@ -87,22 +87,30 @@ export function parseOption(raw: unknown): RoomOption | null {
  * empty the app.
  */
 export function optionsFromItem(item: unknown): RoomOption[] {
+  return rowsOfItem(item).map(parseOption).filter((o): o is RoomOption => o !== null);
+}
+
+function rowsOfItem(item: unknown): unknown[] {
   if (!item || typeof item !== 'object') return [];
   const details = (item as { details?: unknown }).details;
-  const rows = Array.isArray(details)
-    ? details
-    : details && typeof details === 'object' && Array.isArray((details as { stock?: unknown }).stock)
-      ? (details as { stock: unknown[] }).stock
-      : [details];
-  return rows.map(parseOption).filter((o): o is RoomOption => o !== null);
+  if (Array.isArray(details)) return details;
+  if (details && typeof details === 'object' && Array.isArray((details as { stock?: unknown }).stock)) {
+    return (details as { stock: unknown[] }).stock;
+  }
+  return details ? [details] : [];
 }
 
 /** Every room option in the dataset, read page by page with the service-account key. */
-export async function readDataset(env: Env, doFetch: typeof fetch = fetch): Promise<RoomOption[]> {
+export async function readDataset(
+  env: Env,
+  doFetch: typeof fetch = fetch,
+): Promise<{ options: RoomOption[]; read: StockRead }> {
+  const read: StockRead = { pages: 0, items: 0, itemsWithDetails: 0, rowsSeen: 0, rowsKept: 0, pageKeys: [], itemKeys: [], detailKeys: [] };
   const base = datasetItemsUrl(env);
-  if (!base) return [];
+  if (!base) return { options: [], read };
   const seen = new Map<string, RoomOption>();
   let cursor: string | null = null;
+  let firstId = '';
   for (let page = 0; page < MAX_PAGES; page++) {
     const url = new URL(base);
     url.searchParams.set('limit', String(PAGE_LIMIT));
@@ -110,13 +118,48 @@ export async function readDataset(env: Env, doFetch: typeof fetch = fetch): Prom
     const response = await doFetch(url, { headers: a3Headers(env) });
     if (!response.ok) throw new Error(`A3 dataset answered ${response.status}`);
     const body = (await response.json()) as { items?: unknown; nextCursor?: unknown };
+    read.pages++;
+    if (page === 0 && body && typeof body === 'object') read.pageKeys = Object.keys(body).slice(0, 20);
     for (const item of Array.isArray(body.items) ? body.items : []) {
-      for (const option of optionsFromItem(item)) seen.set(option.id, option);
+      read.items++;
+      if (!firstId) firstId = String((item as { id?: unknown } | null)?.id ?? '');
+      if (!read.itemKeys.length && item && typeof item === 'object') read.itemKeys = Object.keys(item).slice(0, 20);
+      const details = (item as { details?: unknown } | null)?.details;
+      if (details) {
+        read.itemsWithDetails++;
+        if (!read.detailKeys.length && typeof details === 'object') read.detailKeys = Object.keys(details).slice(0, 20);
+      }
+      const rows = rowsOfItem(item);
+      read.rowsSeen += rows.length;
+      for (const option of rows.map(parseOption)) {
+        if (!option) continue;
+        read.rowsKept++;
+        seen.set(option.id, option);
+      }
     }
     cursor = typeof body.nextCursor === 'string' && body.nextCursor ? body.nextCursor : null;
     if (!cursor) break;
   }
-  return [...seen.values()];
+  if (read.items > 0 && read.itemsWithDetails === 0 && firstId) read.probe = await probeDetails(base, firstId, env, doFetch);
+  return { options: [...seen.values()], read };
+}
+
+/** Diagnostic: does A3 return an item's details anywhere other than the list? Counts and key names only. */
+async function probeDetails(base: string, id: string, env: Env, doFetch: typeof fetch) {
+  const keysOf = (body: unknown): string[] => {
+    const item = (body as { items?: unknown[] })?.items?.[0] ?? (body as { item?: unknown })?.item ?? body;
+    const details = (item as { details?: unknown } | null)?.details;
+    return details && typeof details === 'object' ? Object.keys(details).slice(0, 10) : [];
+  };
+  const one = await doFetch(base + '/' + encodeURIComponent(id), { headers: a3Headers(env) });
+  const oneBody = one.ok ? await one.json().catch(() => null) : null;
+  const filter = await doFetch(base, {
+    method: 'POST',
+    headers: a3Headers(env),
+    body: JSON.stringify({ where: [{ field: 'item.id', op: 'eq', value: id }], limit: 1 }),
+  });
+  const filterBody = filter.ok ? await filter.json().catch(() => null) : null;
+  return { getStatus: one.status, getDetailKeys: keysOf(oneBody), filterStatus: filter.status, filterDetailKeys: keysOf(filterBody) };
 }
 
 /** The stock to show: the A3 dataset when connected, otherwise the fictional sample. */
@@ -126,7 +169,7 @@ export async function loadStock(env: Env, doFetch: typeof fetch = fetch, now = D
   const stock: Stock =
     key === 'sample'
       ? { source: 'sample', fetchedAt: new Date(now).toISOString(), options: sampleOptions }
-      : { source: 'a3', fetchedAt: new Date(now).toISOString(), options: await readDataset(env, doFetch) };
+      : { source: 'a3', fetchedAt: new Date(now).toISOString(), ...(await readDataset(env, doFetch)) };
   cached = { at: now, key, stock };
   return stock;
 }
