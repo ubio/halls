@@ -1,4 +1,4 @@
-import type { BookingStatus, RoomStatus } from './types';
+import type { BookingStatus, Media, OptionDetails, RoomOption, RoomStatus } from './types';
 
 const money = new Map<string, Intl.NumberFormat>();
 
@@ -60,4 +60,25 @@ export function median(values: number[]): number | null {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+}
+
+
+/**
+ * The detail groups for one room type. Every stay of a room shares its room
+ * and building, so the first stay that carries each group speaks for all;
+ * tenancy and offer can differ by stay, and the first is a fair summary.
+ */
+export function groupDetails(options: RoomOption[]): OptionDetails {
+  const first = <K extends keyof OptionDetails>(key: K) => options.find((o) => o.details?.[key])?.details?.[key] ?? null;
+  return { room: first('room'), building: first('building'), tenancy: first('tenancy'), offer: first('offer') };
+}
+
+/** Room photos first, then the building's, without repeats. */
+export function photosOf(details: OptionDetails): Media[] {
+  const seen = new Set<string>();
+  return [...(details.room?.images ?? []), ...(details.building?.images ?? [])].filter((m) => {
+    if (seen.has(m.url)) return false;
+    seen.add(m.url);
+    return true;
+  });
 }

@@ -1,5 +1,6 @@
 import type { RoomOption, RoomStatus, Stock, StockRead } from '../lib/types';
 import { a3Headers, datasetItemsUrl } from './a3';
+import { buildingName, parseDetails } from './details';
 import type { Env } from './auth';
 import { sampleOptions } from './sample-stock';
 
@@ -36,6 +37,12 @@ function httpsUrl(value: unknown): string | null {
   }
 }
 
+/** 'altus-house' from https://…/leeds/altus-house, as 'Altus House'. */
+function nameFromUrl(url: string | null): string | null {
+  const slug = url ? new URL(url).pathname.split('/').filter(Boolean).pop() : null;
+  return slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : null;
+}
+
 /**
  * One dataset row, checked field by field. A row missing what identifies it
  * (operator, building, room, a real https link) is dropped rather than shown
@@ -46,7 +53,9 @@ export function parseOption(raw: unknown): RoomOption | null {
   const r = raw as Record<string, unknown>;
   const operator = text(r.operator);
   const city = text(r.city);
-  const building = text(r.building);
+  // When A3 puts the building details group in `building`, the name comes from inside it or from the building's address.
+  const detailsInBuilding = Boolean(r.building) && typeof r.building === 'object';
+  const building = text(r.building) ?? (detailsInBuilding ? (buildingName(r) ?? nameFromUrl(httpsUrl(r.buildingUrl))) : null);
   const roomType = text(r.roomType);
   const roomUrl = httpsUrl(r.roomUrl);
   const buildingUrl = httpsUrl(r.buildingUrl) ?? roomUrl;
@@ -77,6 +86,7 @@ export function parseOption(raw: unknown): RoomOption | null {
     bookingFee: number(r.bookingFee),
     cashback: number(r.cashback),
     scrapedAt: text(r.scrapedAt) ?? '',
+    details: parseDetails(r),
   };
 }
 

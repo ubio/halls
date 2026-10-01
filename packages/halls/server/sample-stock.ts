@@ -1,4 +1,4 @@
-import type { RoomOption, RoomStatus } from '../lib/types';
+import type { OptionDetails, RoomOption, RoomStatus } from '../lib/types';
 
 /**
  * Fictional stock, shown until an A3 dataset is connected and labelled as a
@@ -18,6 +18,7 @@ interface SampleRoom {
 }
 
 interface SampleBuilding {
+  details?: OptionDetails;
   operator: string;
   host: string;
   city: string;
@@ -34,6 +35,56 @@ const tenancies = [
 
 const buildings: SampleBuilding[] = [
   {
+    details: {
+      room: {
+        description: 'A bright en suite on a mid floor, with a double bed, a large desk and plenty of storage.',
+        images: [],
+        floorPlanUrl: null,
+        virtualTourUrl: null,
+        features: ['Double bed', 'Study desk', 'Wardrobe', 'Smart TV'],
+        floorLevels: ['3', '4', '5'],
+        view: 'City',
+        accessible: false,
+        flatSize: '5 bedroom flat',
+        kitchen: 'Shared · fully equipped',
+        roomsLeft: 4,
+      },
+      building: {
+        description: 'Ten minutes walk from campus, with a roof terrace, gym and cinema room.',
+        images: [],
+        address: '1 Example Street, Leeds',
+        postcode: 'LS1 1AA',
+        latitude: null,
+        longitude: null,
+        amenities: ['Gym', 'Cinema room', 'Study rooms', 'Roof terrace', 'Bike storage', 'Laundry'],
+        billsIncluded: ['Wi-Fi', 'Electricity', 'Gas', 'Water', 'Contents insurance'],
+        receptionHours: 'Reception open 8am to 8pm, 24/7 security',
+        nearbyUniversities: [
+          { name: 'Example University', distance: '0.6 miles', walkMinutes: 12, cycleMinutes: 4, transitMinutes: 9 },
+          { name: 'Sample Metropolitan University', distance: '1.1 miles', walkMinutes: 22, cycleMinutes: 7, transitMinutes: 14 },
+        ],
+        nearbyTransport: ['Leeds station'],
+        rating: 4.4,
+        reviewCount: 212,
+      },
+      tenancy: {
+        contractType: 'Assured shorthold tenancy',
+        moveInDate: null,
+        moveOutDate: null,
+        depositAmount: 0,
+        reservationFee: 150,
+        paymentPlans: [
+          { label: 'Pay in full', instalments: 1, amountPerInstalment: null },
+          { label: '3 instalments', instalments: 3, amountPerInstalment: null },
+        ],
+        guarantorRequired: true,
+        guarantorScheme: 'Guarantor service accepted',
+        cancellationPolicy: 'Free cancellation within 14 days of booking.',
+        eligibility: 'Undergraduate and postgraduate students',
+        bookingUrl: null,
+      },
+      offer: { title: '£250 cashback', amount: 250, terms: 'Stays of 36 weeks or more.', expiresAt: null, code: null },
+    },
     operator: 'Example Living',
     host: 'example-living.example.com',
     city: 'Leeds',
@@ -104,6 +155,7 @@ export const sampleOptions: RoomOption[] = buildings.flatMap((b) => {
       status: room.status,
       offers: room.offers ?? null,
       scrapedAt: '2026-09-29T07:00:00.000Z',
+      details: b.details ?? null,
     };
     if (room.status === 'sold_out') {
       return [{ ...base, id: roomUrl + '||', weeks: null, startDate: null, endDate: null, pricePerWeek: null, bookingFee: null, cashback: null }];

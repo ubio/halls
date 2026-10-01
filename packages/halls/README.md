@@ -16,7 +16,7 @@ A Cloudflare Worker (`server/`) with a React front end (`app/`, `components/`), 
 | `HALLS_A3_DATASET` | The dataset of room stock. Empty shows the fictional sample |
 | `HALLS_A3_BOOKING_WORKFLOW` | The workflow that prepares a booking. Empty leaves bookings queued |
 
-Rooms are read from `GET https://api.athree.dev/{project}/datasets/{dataset}/items`, page by page, and kept for five minutes. Each item's `details` is one room page's rows in the A3 `RoomStockOption` shape (`{ stock: [...] }`).
+Rooms are read from `GET https://api.athree.dev/{project}/datasets/{dataset}/items`, page by page, and kept for five minutes. Each item's `details` is one room page's rows in the A3 `RoomStockOption` shape (`{ id, stock: [...] }`). A row may also carry optional `room`, `building`, `tenancy` and `offer` groups (photos, 360° tour, features, bills included, amenities, nearby universities, deposit, payment plans, offer terms); `server/details.ts` reads them under either name (`room` or `roomDetails`), keeps only https links and drops anything malformed. The room panel shows whatever a site provides.
 
 A booking is prepared with `POST https://api.athree.dev/{project}/{workflow}?site={site}`, where the site is the operator's host with dots as dashes (`unitestudents-com`). The call waits for the run (up to five minutes) and its output is kept on the booking. The input always carries `stopBeforeSubmit: true`.
 

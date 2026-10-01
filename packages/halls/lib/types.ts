@@ -26,6 +26,87 @@ export interface RoomOption {
   bookingFee: number | null;
   cashback: number | null;
   scrapedAt: string;
+  /** Richer detail from the room and building pages; null when A3 found none. */
+  details: OptionDetails | null;
+}
+
+/** Every part is optional: a site that lacks one leaves it null. */
+export interface OptionDetails {
+  room: RoomDetails | null;
+  building: BuildingDetails | null;
+  tenancy: TenancyDetails | null;
+  offer: OfferDetails | null;
+}
+
+export interface Media {
+  url: string;
+  caption: string | null;
+}
+
+export interface RoomDetails {
+  description: string | null;
+  images: Media[];
+  floorPlanUrl: string | null;
+  virtualTourUrl: string | null;
+  features: string[];
+  floorLevels: string[];
+  view: string | null;
+  accessible: boolean | null;
+  flatSize: string | null;
+  kitchen: string | null;
+  roomsLeft: number | null;
+}
+
+export interface NearbyUniversity {
+  name: string;
+  distance: string | null;
+  walkMinutes: number | null;
+  cycleMinutes: number | null;
+  transitMinutes: number | null;
+}
+
+export interface BuildingDetails {
+  description: string | null;
+  images: Media[];
+  address: string | null;
+  postcode: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  amenities: string[];
+  billsIncluded: string[];
+  receptionHours: string | null;
+  nearbyUniversities: NearbyUniversity[];
+  nearbyTransport: string[];
+  rating: number | null;
+  reviewCount: number | null;
+}
+
+export interface PaymentPlan {
+  label: string;
+  instalments: number | null;
+  amountPerInstalment: number | null;
+}
+
+export interface TenancyDetails {
+  contractType: string | null;
+  moveInDate: string | null;
+  moveOutDate: string | null;
+  depositAmount: number | null;
+  reservationFee: number | null;
+  paymentPlans: PaymentPlan[];
+  guarantorRequired: boolean | null;
+  guarantorScheme: string | null;
+  cancellationPolicy: string | null;
+  eligibility: string | null;
+  bookingUrl: string | null;
+}
+
+export interface OfferDetails {
+  title: string | null;
+  amount: number | null;
+  terms: string | null;
+  expiresAt: string | null;
+  code: string | null;
 }
 
 export type RoomStatus = 'available' | 'limited' | 'sold_out';

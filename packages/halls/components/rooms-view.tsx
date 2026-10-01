@@ -5,7 +5,7 @@ import { Button } from '@oss-os/ui/components/button';
 import { Input } from '@oss-os/ui/components/input';
 import { NativeSelect, NativeSelectOption } from '@oss-os/ui/components/native-select';
 import { RoomSheet } from '@/components/room-sheet';
-import { formatMoney, formatWhen, median, roomStatusLabel, roomStatusTone } from '@/lib/format';
+import { formatMoney, formatWhen, groupDetails, median, photosOf, roomStatusLabel, roomStatusTone } from '@/lib/format';
 import { NAVIGATED } from '@/lib/navigation';
 import type { RoomOption, RoomStatus, Stock } from '@/lib/types';
 
@@ -230,10 +230,20 @@ export function RoomsView({ stock, onBook }: Props) {
                 <tr key={g.key}>
                   <td>
                     <button className="row-link" onClick={() => setOpen(g)}>
-                      <strong>{g.first.roomType}</strong>
-                      <small>
-                        {[g.first.sizeM2 ? `${g.first.sizeM2} m²` : null, g.first.bedType].filter(Boolean).join(' · ') || '—'}
-                      </small>
+                      {(() => {
+                        const photo = photosOf(groupDetails(g.options))[0];
+                        return photo ? (
+                          <img className="row-thumb" src={photo.url} alt="" loading="lazy" referrerPolicy="no-referrer" />
+                        ) : (
+                          <span className="row-thumb row-thumb-empty" aria-hidden="true" />
+                        );
+                      })()}
+                      <span className="row-text">
+                        <strong>{g.first.roomType}</strong>
+                        <small>
+                          {[g.first.sizeM2 ? `${g.first.sizeM2} m²` : null, g.first.bedType].filter(Boolean).join(' · ') || '—'}
+                        </small>
+                      </span>
                     </button>
                   </td>
                   <td>
