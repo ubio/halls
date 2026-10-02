@@ -97,7 +97,11 @@ export function RoomsView({ stock, onBook }: Props) {
       if (q && ![o.roomType, o.building, o.city, o.operator, o.offers ?? ''].join(' ').toLowerCase().includes(q)) return false;
       return true;
     });
+    // Rooms with photos come first, then the chosen order: they make the better first impression.
+    const photo = new Map(list.map((g) => [g.key, photosOf(groupDetails(g.options)).length > 0 ? 0 : 1]));
     return list.sort((a, b) => {
+      const byPhoto = (photo.get(a.key) ?? 1) - (photo.get(b.key) ?? 1);
+      if (byPhoto) return byPhoto;
       if (sort === 'city') return a.first.city.localeCompare(b.first.city) || a.first.building.localeCompare(b.first.building);
       const pa = a.from ?? Infinity;
       const pb = b.from ?? Infinity;

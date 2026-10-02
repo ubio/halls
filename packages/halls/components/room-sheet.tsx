@@ -12,6 +12,13 @@ interface Props {
   onBook: (option: RoomOption) => void;
 }
 
+/** Feature tags that say something the facts above them have not already said. */
+function withoutRepeats(features: string[], shown: (string | null | undefined)[]): string[] {
+  const norm = (v: string) => v.toLowerCase().replace(/[^a-z0-9.]/g, '');
+  const known = new Set(shown.filter((v): v is string => Boolean(v)).map(norm));
+  return features.filter((f) => !known.has(norm(f)));
+}
+
 function Chips({ items, tick = false }: { items: string[]; tick?: boolean }) {
   return (
     <ul className="chip-list">
@@ -217,7 +224,14 @@ export function RoomSheet({ group, onClose, onBook }: Props) {
           {offer ? (
             <div className="room-offer">
               <strong>{offer.title ?? room.offers ?? 'Offer'}</strong>
-              {offer.terms && <span>{offer.terms}</span>}
+              {offer.terms &&
+                (/^https:\/\/\S+$/.test(offer.terms) ? (
+                  <a className="text-link" href={offer.terms} target="_blank" rel="noopener noreferrer">
+                    Terms <ArrowUpRight size={12} />
+                  </a>
+                ) : (
+                  <span>{offer.terms}</span>
+                ))}
               {(offer.code || offer.expiresAt) && (
                 <span>{[offer.code ? `Code ${offer.code}` : null, offer.expiresAt ? `Ends ${offer.expiresAt}` : null].filter(Boolean).join(' · ')}</span>
               )}
@@ -240,7 +254,10 @@ export function RoomSheet({ group, onClose, onBook }: Props) {
                   ['Accessible', r.accessible === null ? null : r.accessible ? 'Yes' : 'No'],
                 ]}
               />
-              {r.features.length > 0 && <Chips items={r.features} />}
+              {(() => {
+                const extra = withoutRepeats(r.features, [room.bedType, room.bathroom, r.kitchen, r.flatSize, room.sizeM2 ? `${room.sizeM2} m²` : null]);
+                return extra.length > 0 ? <Chips items={extra} /> : null;
+              })()}
             </section>
           )}
           {details.building && details.building.billsIncluded.length > 0 && (
