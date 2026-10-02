@@ -172,6 +172,11 @@ button:disabled {
   display: grid;
   gap: 16px;
   overflow-y: auto;
+  /* The body scrolls, so its rows must keep their content height: an auto row
+     holding a scroller (the photo strip, the universities table) otherwise
+     shrinks to nothing when the panel is taller than the screen. */
+  grid-auto-rows: max-content;
+  align-content: start;
 }
 .room-facts {
   display: grid;
