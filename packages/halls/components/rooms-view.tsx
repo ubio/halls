@@ -62,6 +62,7 @@ export function RoomsView({ stock, onBook }: Props) {
   const [operator, setOperator] = useState(readOperatorParam);
   const [city, setCity] = useState('');
   const [showSoldOut, setShowSoldOut] = useState(false);
+  const [photosOnly, setPhotosOnly] = useState(false);
   const [maxPrice, setMaxPrice] = useState('');
   const [sort, setSort] = useState<'price' | 'price-desc' | 'city'>('price');
   const [limit, setLimit] = useState(PAGE);
@@ -85,6 +86,9 @@ export function RoomsView({ stock, onBook }: Props) {
     [groups, operator],
   );
 
+  /** Which room types have at least one photo, worked out once per stock read. */
+  const hasPhoto = useMemo(() => new Set(groups.filter((g) => photosOf(groupDetails(g.options)).length > 0).map((g) => g.key)), [groups]);
+
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
     const cap = Number(maxPrice) || Infinity;
@@ -93,21 +97,21 @@ export function RoomsView({ stock, onBook }: Props) {
       if (operator && o.operator !== operator) return false;
       if (city && o.city !== city) return false;
       if (!showSoldOut && g.status === 'sold_out') return false;
+      if (photosOnly && !hasPhoto.has(g.key)) return false;
       if (g.from !== null && g.from > cap) return false;
       if (q && ![o.roomType, o.building, o.city, o.operator, o.offers ?? ''].join(' ').toLowerCase().includes(q)) return false;
       return true;
     });
     // Rooms with photos come first, then the chosen order: they make the better first impression.
-    const photo = new Map(list.map((g) => [g.key, photosOf(groupDetails(g.options)).length > 0 ? 0 : 1]));
     return list.sort((a, b) => {
-      const byPhoto = (photo.get(a.key) ?? 1) - (photo.get(b.key) ?? 1);
+      const byPhoto = Number(hasPhoto.has(b.key)) - Number(hasPhoto.has(a.key));
       if (byPhoto) return byPhoto;
       if (sort === 'city') return a.first.city.localeCompare(b.first.city) || a.first.building.localeCompare(b.first.building);
       const pa = a.from ?? Infinity;
       const pb = b.from ?? Infinity;
       return sort === 'price' ? pa - pb : pb - pa;
     });
-  }, [groups, query, operator, city, showSoldOut, maxPrice, sort]);
+  }, [groups, hasPhoto, query, operator, city, showSoldOut, photosOnly, maxPrice, sort]);
 
   if (!stock) return <p className="muted">Loading rooms…</p>;
 
@@ -207,7 +211,11 @@ export function RoomsView({ stock, onBook }: Props) {
           <NativeSelectOption value="city">By city</NativeSelectOption>
         </NativeSelect>
         <label className="halls-check">
-          <input type="checkbox" checked={showSoldOut} onChange={(e) => setShowSoldOut(e.target.checked)} />
+          <input id="filter-photos" type="checkbox" checked={photosOnly} onChange={(e) => setPhotosOnly(e.target.checked)} />
+          With photos
+        </label>
+        <label className="halls-check">
+          <input id="filter-sold-out" type="checkbox" checked={showSoldOut} onChange={(e) => setShowSoldOut(e.target.checked)} />
           Show sold out
         </label>
       </div>
